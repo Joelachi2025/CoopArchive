@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "cooparchive",
+  "private_key_id": "60de48480a76a6b8cbbae043b30bffb51bed222e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCjr2yi+/jHeGun\nyqFx0pcZdYrgNNYb7P3Xk+rB9tN0xniBu8BeDn9l40+H+jD3XW0fKiEPsBKeuk50\npD+0fBCuLQMbY2IXn2pqejGp+P/4vGPFunUCMD39Rv/NvyrrJacJ40jb4Jsh/Jsq\nUztZqutDHeFLJ+N248W6Q+InV6q9yzKxz006fruapf6mNzW+kZoRXCPIeAtnVHgA\nleTn3d1HnEiVtngDu5e+38sz8IOiZh5Yalgd4Z526R0f0cf+CodiT1+qSibBVpxX\niV83S3/46GAhDUY8X5Eq71W9NV8B5z1k5of7XdQLvae3KZ0tHhSvLqslvwKyLw1F\nL3q7bxXzAgMBAAECggEAR15ysLHKrDZuQi/Qqs9WgIxGrDF9dZmkqH1fK4lSc6Uh\n3/ccDiamF6fAAprtBL4gmSkGV0+/HqQ/Fw6SlEBQCZGovCVeHMyuWpTC2Miv2yVR\nH2KIKBcewDNXz77dmL/HEEGgf/ZzzaLViOPXieZDQ/VgSSOwQyNXEDsO/XZ1BOFE\noBBNlhmB30oVEwzXgO2k5ogAqZDnSYAet6EgJUpUgOkXmbVD/5E2l673rr5qjrm1\nwmRW/XDl3LaFF2w9PlXC7fwBeiafU3ifRa2OCafD44hRU1AGCH/NUQivs3dfOwO1\n/Jaf1Divv8mFHohnioKLJ2h7NI7hTkVixh1opY4teQKBgQDV3oNAhIYZ7iNPgv7B\nc7u9diY3tz8KS8ISKJioUms2eX7yXTPCk9as+DCsrrPCrAWvMr9mdvVyMhFnxL2y\nIo2LoU029PXHNuc16tOB6SHzyXTKNjZVxCYS3pZe2GGtVvKhxwSBICOObA61pPsL\nvTmsZmALNxs4CuDNvVgeWlHTnQKBgQDD7h7fhw/KXe674od5wBaAaKypUYrYUsFC\ngM/O5YAJuhhZ4LSvGsq6llP1lwUSVat/DFlcaHQKY9GptbHPOG122eopum0hm3CH\n/aqo0oN7HbO9zjsUHwyjTMTAR3aq76uuvcMY1Enw+dxuP+T2F0Lhuz3+/E0kfejQ\nuQPRJAjCzwKBgQC4s5WY55rE1CQMrC4FtkTCKEJzRb+czbaKZiMI4z0Sa7UV7SYh\nefohoaqvx6UZj+TM3L/t5visqc7cVk4ZhLvHhgOgXcfRR3pA10/Y1xVqbGZ/qHge\nc+sJytAEk00wHXIoAy/BsJbkji/Z8eSZy87+M9/ob6wDJ2nkZQywEgKvBQKBgEst\nQJdPwVVKeWGJ56VleLzIbQeCjB24kwKrXhDqqhgRWWqS94EAbKzvJUPkMEP6rxTO\nbjMwuOWLq1TMrG7wHcAumNRt/ZWZiLIFOMgSDfTdTqwTR0PPLhAyUoPcZ8HquBsS\nIJuUSNK3bEa5KWbrQfRO3djKgebwkLYVZ0uF4f6tAoGAeqEXa0XlbbkMP0iAijaf\nBhWVvdQ6+DsdbVJ5AvRIoPKNKf6Eph09TIkav8hyAbxz0yyEEKsfL6ysHn/ypFq0\nLGmrTSbck/uKDx6erg5G1vJEjrOjEoJgZmYkFiX1NU1H5tD3XmqPxQfUT6wnzCoH\nNu1HkrfeTnOzp/rYKvXsHbk=\n-----END PRIVATE KEY-----\n",
+  "client_email": "cooparchive@cooparchive.iam.gserviceaccount.com",
+  "client_id": "116869027895334057091",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cooparchive%40cooparchive.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
