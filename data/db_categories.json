@@ -26,5 +26,12 @@
     "icon": "👥",
     "created_at": "2026-06-11 22:49:51",
     "id": 4
+  },
+  {
+    "name": "Environnement",
+    "color": "#10AD3F",
+    "icon": "🌿",
+    "created_at": "2026-06-11 22:49:52",
+    "id": 5
   }
 ]
