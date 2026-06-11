@@ -97,42 +97,47 @@ def _github_db_path(filename: str) -> str:
     return f"data/{filename}"
 
 def _github_get_file(filename: str) -> tuple:
-    """Retourne (données, sha) depuis GitHub. sha=None si fichier inexistant."""
+    """Retourne (donnees, sha) depuis GitHub. sha=None si fichier inexistant."""
     try:
         path = _github_db_path(filename)
-        url  = f"https://api.github.com/repos/{_github_repo()}/contents/{path}"
+        url  = "https://api.github.com/repos/{}/contents/{}".format(_github_repo(), path)
         resp = _requests.get(url, headers=_github_headers(),
-                             params={"ref": _github_branch()})
+                             params={"ref": _github_branch()}, timeout=15)
         if resp.status_code == 404:
             return [], None
-        resp.raise_for_status()
-        body    = resp.json()
-        sha     = body["sha"]
-        content = base64.b64decode(body["content"]).decode("utf-8")
-        return json.loads(content), sha
+        if not resp.ok:
+            return [], None
+        body = resp.json()
+        sha  = body.get("sha")
+        raw  = base64.b64decode(body["content"]).decode("utf-8")
+        return json.loads(raw), sha
     except Exception:
         return [], None
 
 def _github_put_file(filename: str, data: list, sha) -> None:
-    """Crée ou met à jour un fichier JSON sur GitHub."""
-    path    = _github_db_path(filename)
-    url     = f"https://api.github.com/repos/{_github_repo()}/contents/{path}"
-    content = base64.b64encode(
-        json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
-    ).decode("utf-8")
-    payload = {
-        "message": f"update {filename}",
-        "content": content,
-        "branch":  _github_branch(),
-    }
-    if sha:
-        payload["sha"] = sha
-    resp = _requests.put(url, headers=_github_headers(), json=payload)
-    resp.raise_for_status()
+    """Cree ou met a jour un fichier JSON sur GitHub."""
+    try:
+        path    = _github_db_path(filename)
+        url     = "https://api.github.com/repos/{}/contents/{}".format(_github_repo(), path)
+        encoded = base64.b64encode(
+            json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
+        ).decode("utf-8")
+        payload = {
+            "message": "update {}".format(filename),
+            "content": encoded,
+            "branch":  _github_branch(),
+        }
+        if sha:
+            payload["sha"] = sha
+        resp = _requests.put(url, headers=_github_headers(), json=payload, timeout=15)
+        if not resp.ok:
+            st.warning("GitHub write error {}: {}".format(resp.status_code, resp.text[:200]))
+    except Exception as e:
+        st.warning("GitHub write exception: {}".format(e))
 
 def db_read(table: str) -> list:
     data, _ = _github_get_file(DB_FILES[table])
-    return data
+    return data if data else []
 
 def db_write(table: str, data: list) -> None:
     filename = DB_FILES[table]
