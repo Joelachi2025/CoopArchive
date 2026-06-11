@@ -33,5 +33,12 @@
     "icon": "🌿",
     "created_at": "2026-06-11 22:49:52",
     "id": 5
+  },
+  {
+    "name": "Certificats",
+    "color": "#7B2CBF",
+    "icon": "🏅",
+    "created_at": "2026-06-11 22:49:53",
+    "id": 6
   }
 ]
