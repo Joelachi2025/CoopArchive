@@ -174,84 +174,64 @@ def db_delete(table: str, record_id: int) -> None:
 # ─────────────────────────────────────────────
 
 def gdrive_upload(file_bytes: bytes, filename: str, mime_type: str) -> str:
-    service = get_gdrive_service()
-    folder_id = gdrive_folder_id()
-    year_month = datetime.now().strftime("%Y/%m")
-    subfolder_id = _gdrive_ensure_path(service, folder_id, year_month)
-    metadata = {"name": filename, "parents": [subfolder_id]}
-    media = MediaIoBaseUpload(
-        io.BytesIO(file_bytes),
-        mimetype=mime_type or "application/octet-stream",
-        resumable=True,
-    )
-    result = service.files().create(
-        body=metadata,
-        media_body=media,
-        fields="id",
-    ).execute()
-    return result["id"]
+    """Stocke le fichier sur GitHub (base64) et retourne le filename comme ID."""
+    try:
+        path    = "files/{}".format(filename)
+        url     = "https://api.github.com/repos/{}/contents/{}".format(_github_repo(), path)
+        encoded = base64.b64encode(file_bytes).decode("utf-8")
+        # Verifier si existe deja
+        resp_get = _requests.get(url, headers=_github_headers(), timeout=15)
+        sha = resp_get.json().get("sha") if resp_get.ok else None
+        payload = {
+            "message": "upload {}".format(filename),
+            "content": encoded,
+            "branch":  _github_branch(),
+        }
+        if sha:
+            payload["sha"] = sha
+        resp = _requests.put(url, headers=_github_headers(), json=payload, timeout=30)
+        if not resp.ok:
+            st.warning("Erreur upload fichier: {}".format(resp.status_code))
+    except Exception as e:
+        st.warning("Upload exception: {}".format(e))
+    return filename
 
 
 def gdrive_download(file_id: str) -> bytes | None:
+    """Telecharge un fichier depuis GitHub."""
     if not file_id:
         return None
     try:
-        service = get_gdrive_service()
-        request = service.files().get_media(fileId=file_id)
-        buf = io.BytesIO()
-        downloader = MediaIoBaseDownload(buf, request)
-        done = False
-        while not done:
-            _, done = downloader.next_chunk()
-        return buf.getvalue()
+        path = "files/{}".format(file_id)
+        url  = "https://api.github.com/repos/{}/contents/{}".format(_github_repo(), path)
+        resp = _requests.get(url, headers=_github_headers(), timeout=15)
+        if not resp.ok:
+            return None
+        body = resp.json()
+        return base64.b64decode(body["content"])
     except Exception:
         return None
 
 
 def gdrive_delete_file(file_id: str) -> None:
+    """Supprime un fichier sur GitHub."""
     if not file_id:
         return
     try:
-        service = get_gdrive_service()
-        service.files().delete(
-            fileId=file_id,
-            supportsAllDrives=True,
-        ).execute()
+        path = "files/{}".format(file_id)
+        url  = "https://api.github.com/repos/{}/contents/{}".format(_github_repo(), path)
+        resp_get = _requests.get(url, headers=_github_headers(), timeout=15)
+        if not resp_get.ok:
+            return
+        sha = resp_get.json().get("sha")
+        payload = {
+            "message": "delete {}".format(file_id),
+            "sha": sha,
+            "branch": _github_branch(),
+        }
+        _requests.delete(url, headers=_github_headers(), json=payload, timeout=15)
     except Exception:
         pass
-
-
-def _gdrive_ensure_path(service, root_id: str, path: str) -> str:
-    parts = path.strip("/").split("/")
-    current_id = root_id
-    for part in parts:
-        query = (
-            f"name='{part}' and '{current_id}' in parents "
-            f"and mimeType='application/vnd.google-apps.folder' and trashed=false"
-        )
-        res = service.files().list(
-            q=query,
-            fields="files(id)",
-            pageSize=1,
-            supportsAllDrives=True,
-            includeItemsFromAllDrives=True,
-        ).execute()
-        files = res.get("files", [])
-        if files:
-            current_id = files[0]["id"]
-        else:
-            meta = {
-                "name": part,
-                "mimeType": "application/vnd.google-apps.folder",
-                "parents": [current_id],
-            }
-            folder = service.files().create(
-                body=meta,
-                fields="id",
-                supportsAllDrives=True,
-            ).execute()
-            current_id = folder["id"]
-    return current_id
 
 
 # ─────────────────────────────────────────────
@@ -259,25 +239,10 @@ def _gdrive_ensure_path(service, root_id: str, path: str) -> str:
 # ─────────────────────────────────────────────
 
 def initialize_database() -> None:
-    # Vérification de l'accès au dossier Drive
-    try:
-        service = get_gdrive_service()
-        folder_id = gdrive_folder_id()
-        service.files().get(
-            fileId=folder_id,
-            fields="id,name",
-            supportsAllDrives=True,
-        ).execute()
-    except Exception as e:
-        st.error(f"❌ Dossier Google Drive inaccessible : {e}\n\n"
-                 f"Vérifiez que le dossier est partagé avec l'email du Service Account (Éditeur) "
-                 f"et que GDRIVE_FOLDER_ID est correct dans les secrets.")
-        st.stop()
-
     try:
         cats = db_read("categories")
     except Exception as e:
-        st.error(f"❌ Impossible d'accéder à Google Drive : {e}")
+        st.error("Impossible d'acceder a GitHub : {}".format(e))
         st.stop()
 
     if not cats:
