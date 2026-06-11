@@ -126,12 +126,13 @@ def _write_json_to_drive(filename: str, data: list) -> None:
             media_body=media,
             supportsAllDrives=True,
         ).execute()
-  result = service.files().create(
-        body=metadata,
-        media_body=media,
-        fields="id",
-    ).execute()
-    return result["id"] 
+   else:
+        metadata = {"name": filename, "parents": [folder_id]}
+        service.files().create(
+            body=metadata,
+            media_body=media,
+            fields="id",
+        ).execute()
 
 
 def db_read(table: str) -> list:
