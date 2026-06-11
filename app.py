@@ -98,17 +98,20 @@ def _github_db_path(filename: str) -> str:
 
 def _github_get_file(filename: str) -> tuple:
     """Retourne (données, sha) depuis GitHub. sha=None si fichier inexistant."""
-    path = _github_db_path(filename)
-    url  = f"https://api.github.com/repos/{_github_repo()}/contents/{path}"
-    resp = _requests.get(url, headers=_github_headers(),
-                         params={"ref": _github_branch()})
-    if resp.status_code == 404:
+    try:
+        path = _github_db_path(filename)
+        url  = f"https://api.github.com/repos/{_github_repo()}/contents/{path}"
+        resp = _requests.get(url, headers=_github_headers(),
+                             params={"ref": _github_branch()})
+        if resp.status_code == 404:
+            return [], None
+        resp.raise_for_status()
+        body    = resp.json()
+        sha     = body["sha"]
+        content = base64.b64decode(body["content"]).decode("utf-8")
+        return json.loads(content), sha
+    except Exception:
         return [], None
-    resp.raise_for_status()
-    body    = resp.json()
-    sha     = body["sha"]
-    content = base64.b64decode(body["content"]).decode("utf-8")
-    return json.loads(content), sha
 
 def _github_put_file(filename: str, data: list, sha) -> None:
     """Crée ou met à jour un fichier JSON sur GitHub."""
