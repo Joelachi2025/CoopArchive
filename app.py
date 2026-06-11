@@ -126,7 +126,7 @@ def _write_json_to_drive(filename: str, data: list) -> None:
             media_body=media,
             supportsAllDrives=True,
         ).execute()
-   else:
+    else:
         metadata = {"name": filename, "parents": [folder_id]}
         service.files().create(
             body=metadata,
@@ -187,6 +187,7 @@ def gdrive_upload(file_bytes: bytes, filename: str, mime_type: str) -> str:
         media_body=media,
         fields="id",
     ).execute()
+    return result["id"]
 
 
 def gdrive_download(file_id: str) -> bytes | None:
