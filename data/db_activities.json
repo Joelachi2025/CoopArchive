@@ -34,5 +34,14 @@
     "details": "Connexion réussie.",
     "created_at": "2026-06-12 10:05:25",
     "id": 4
+  },
+  {
+    "user_id": 1,
+    "action": "Connexion",
+    "label": "Joel ATTEKE",
+    "document_id": null,
+    "details": "Connexion réussie.",
+    "created_at": "2026-06-12 16:39:30",
+    "id": 5
   }
 ]
