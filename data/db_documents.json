@@ -18,5 +18,25 @@
     "updated_at": "2026-06-11 23:17:10",
     "deleted_at": null,
     "id": 1
+  },
+  {
+    "title": "Facture d'audit RA 2026",
+    "original_filename": "FACTURE SOCOPACDI (RA_00004392104).pdf",
+    "stored_filename": "20260613145459335834.pdf",
+    "storage_path": "20260613145459335834.pdf",
+    "extension": ".pdf",
+    "mime_type": "application/pdf",
+    "category_id": 1,
+    "owner_id": 1,
+    "description": "",
+    "tags": "",
+    "size_bytes": 181150,
+    "expires_at": null,
+    "status": "Actif",
+    "is_deleted": false,
+    "created_at": "2026-06-13 14:55:00",
+    "updated_at": "2026-06-13 14:55:00",
+    "deleted_at": null,
+    "id": 2
   }
 ]
