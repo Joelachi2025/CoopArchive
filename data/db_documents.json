@@ -58,5 +58,25 @@
     "updated_at": "2026-06-13 14:55:38",
     "deleted_at": null,
     "id": 3
+  },
+  {
+    "title": "Facture audit 3 _ 2026",
+    "original_filename": "FACTURE SOCOPACDI (RA_00162932406).pdf",
+    "stored_filename": "20260613145609628473.pdf",
+    "storage_path": "20260613145609628473.pdf",
+    "extension": ".pdf",
+    "mime_type": "application/pdf",
+    "category_id": 1,
+    "owner_id": 1,
+    "description": "",
+    "tags": "",
+    "size_bytes": 180905,
+    "expires_at": null,
+    "status": "Actif",
+    "is_deleted": false,
+    "created_at": "2026-06-13 14:56:10",
+    "updated_at": "2026-06-13 14:56:10",
+    "deleted_at": null,
+    "id": 4
   }
 ]
