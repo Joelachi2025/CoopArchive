@@ -78,5 +78,25 @@
     "updated_at": "2026-06-13 14:56:10",
     "deleted_at": null,
     "id": 4
+  },
+  {
+    "title": "Contrat producteur _ travailleur FT",
+    "original_filename": "2025-03_Gestion des Exploitants Agricoles_Relationships_with_Farm_Operators_Cote_d_Ivoire_FR.pdf",
+    "stored_filename": "20260615061805957068.pdf",
+    "storage_path": "20260615061805957068.pdf",
+    "extension": ".pdf",
+    "mime_type": "application/pdf",
+    "category_id": 1,
+    "owner_id": 1,
+    "description": "",
+    "tags": "",
+    "size_bytes": 528876,
+    "expires_at": null,
+    "status": "Actif",
+    "is_deleted": false,
+    "created_at": "2026-06-15 06:18:07",
+    "updated_at": "2026-06-15 06:18:07",
+    "deleted_at": null,
+    "id": 5
   }
 ]
