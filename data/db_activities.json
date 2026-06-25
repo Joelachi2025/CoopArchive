@@ -151,5 +151,14 @@
     "details": "Document déplacé dans la corbeille.",
     "created_at": "2026-06-25 22:35:10",
     "id": 17
+  },
+  {
+    "user_id": 1,
+    "action": "Suppression",
+    "label": "Bon de livraison",
+    "document_id": 1,
+    "details": "Document déplacé dans la corbeille.",
+    "created_at": "2026-06-25 22:35:22",
+    "id": 18
   }
 ]
