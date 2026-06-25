@@ -72,11 +72,11 @@
     "tags": "",
     "size_bytes": 180905,
     "expires_at": null,
-    "status": "Actif",
-    "is_deleted": false,
+    "status": "Archivé",
+    "is_deleted": true,
     "created_at": "2026-06-13 14:56:10",
-    "updated_at": "2026-06-13 14:56:10",
-    "deleted_at": null,
+    "updated_at": "2026-06-25 22:34:43",
+    "deleted_at": "2026-06-25 22:34:43",
     "id": 4
   },
   {
