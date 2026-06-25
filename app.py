@@ -70,7 +70,7 @@ def get_gdrive_service():
 
 
 def gdrive_folder_id() -> str:
-    return st.secrets["GDRIVE_FOLDER_ID"]
+    return st.secrets["1jkafk34u-B4pBsr7CZ8ZQrKuNOalvEpD"]
 
 
 # ─────────────────────────────────────────────
@@ -170,68 +170,62 @@ def db_delete(table: str, record_id: int) -> None:
 
 
 # ─────────────────────────────────────────────
-# STOCKAGE FICHIERS DRIVE
+# STOCKAGE FICHIERS — GOOGLE DRIVE
 # ─────────────────────────────────────────────
 
 def gdrive_upload(file_bytes: bytes, filename: str, mime_type: str) -> str:
-    """Stocke le fichier sur GitHub (base64) et retourne le filename comme ID."""
+    """Stocke le fichier sur Google Drive (dans GDRIVE_FOLDER_ID) et retourne le file_id Drive."""
     try:
-        path    = "files/{}".format(filename)
-        url     = "https://api.github.com/repos/{}/contents/{}".format(_github_repo(), path)
-        encoded = base64.b64encode(file_bytes).decode("utf-8")
-        # Verifier si existe deja
-        resp_get = _requests.get(url, headers=_github_headers(), timeout=15)
-        sha = resp_get.json().get("sha") if resp_get.ok else None
-        payload = {
-            "message": "upload {}".format(filename),
-            "content": encoded,
-            "branch":  _github_branch(),
+        service = get_gdrive_service()
+        file_metadata = {
+            "name": filename,
+            "parents": [gdrive_folder_id()],
         }
-        if sha:
-            payload["sha"] = sha
-        resp = _requests.put(url, headers=_github_headers(), json=payload, timeout=30)
-        if not resp.ok:
-            st.warning("Erreur upload fichier: {}".format(resp.status_code))
+        media = MediaIoBaseUpload(io.BytesIO(file_bytes), mimetype=mime_type or "application/octet-stream", resumable=False)
+        created = service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields="id",
+            supportsAllDrives=True,
+        ).execute()
+        return created.get("id", "")
     except Exception as e:
-        st.warning("Upload exception: {}".format(e))
-    return filename
+        st.warning("Erreur upload Google Drive: {}".format(e))
+        return ""
 
 
 def gdrive_download(file_id: str) -> bytes | None:
-    """Telecharge un fichier depuis GitHub."""
+    """Telecharge un fichier depuis Google Drive."""
     if not file_id:
         return None
     try:
-        path = "files/{}".format(file_id)
-        url  = "https://api.github.com/repos/{}/contents/{}".format(_github_repo(), path)
-        resp = _requests.get(url, headers=_github_headers(), timeout=15)
-        if not resp.ok:
-            return None
-        body = resp.json()
-        return base64.b64decode(body["content"])
-    except Exception:
+        service = get_gdrive_service()
+        request = service.files().get_media(fileId=file_id, supportsAllDrives=True)
+        buffer = io.BytesIO()
+        downloader = MediaIoBaseDownload(buffer, request)
+        done = False
+        while not done:
+            _, done = downloader.next_chunk()
+        return buffer.getvalue()
+    except Exception as e:
+        st.warning("Erreur téléchargement Google Drive: {}".format(e))
         return None
 
 
 def gdrive_delete_file(file_id: str) -> None:
-    """Supprime un fichier sur GitHub."""
+    """Supprime un fichier sur Google Drive."""
     if not file_id:
         return
     try:
-        path = "files/{}".format(file_id)
-        url  = "https://api.github.com/repos/{}/contents/{}".format(_github_repo(), path)
-        resp_get = _requests.get(url, headers=_github_headers(), timeout=15)
-        if not resp_get.ok:
-            return
-        sha = resp_get.json().get("sha")
-        payload = {
-            "message": "delete {}".format(file_id),
-            "sha": sha,
-            "branch": _github_branch(),
-        }
-        _requests.delete(url, headers=_github_headers(), json=payload, timeout=15)
-    except Exception:
-        pass
+        service = get_gdrive_service()
+        service.files().delete(fileId=file_id, supportsAllDrives=True).execute()
+    except Exception as e:
+        st.warning("Erreur suppression Google Drive: {}".format(e))
+
+
+def gdrive_preview_url(file_id: str) -> str:
+    """URL de visionneuse Google Drive (iframe) pour un fichier donné."""
+    return f"https://drive.google.com/file/d/{file_id}/preview"
 
 
 # ─────────────────────────────────────────────
@@ -788,9 +782,27 @@ def filter_documents(df: pd.DataFrame, query: str) -> pd.DataFrame:
 
 def render_document_preview(row: pd.Series) -> None:
     ext = str(row.get("extension", "")).lower()
+    file_id = row.get("storage_path", "")
     st.markdown('<div class="preview-box">', unsafe_allow_html=True)
     st.markdown(f"**Aperçu : {row['title']}**")
-    file_bytes = download_document_bytes(row["stored_filename"], row.get("storage_path", ""))
+
+    # Types pris en charge nativement par la visionneuse Google Drive (pas de téléchargement requis)
+    drive_native_preview = {
+        ".pdf", ".docx", ".doc", ".pptx", ".ppt", ".xlsx", ".xls",
+        ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg", ".tiff",
+    }
+
+    if ext in drive_native_preview and file_id:
+        st.markdown(
+            f'<iframe src="{gdrive_preview_url(file_id)}" width="100%" height="500px" '
+            f'style="border:none;border-radius:8px;" allow="autoplay"></iframe>',
+            unsafe_allow_html=True,
+        )
+        st.caption("Aperçu fourni par Google Drive.")
+        st.markdown("</div>", unsafe_allow_html=True)
+        return
+
+    file_bytes = download_document_bytes(row["stored_filename"], file_id)
     if file_bytes is None:
         st.caption("⚠️ Fichier introuvable dans le stockage cloud.")
     elif ext in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}:
@@ -1245,7 +1257,7 @@ def render_settings_page():
     used, capacity = storage_stats(active)
     st.markdown("### Informations système")
     c1, c2, c3 = st.columns(3)
-    c1.metric("Base de données",   "Google Drive (JSON)")
+    c1.metric("Base de données",   "GitHub (JSON)")
     c2.metric("Stockage fichiers", "Google Drive")
     c3.metric("Capacité",          format_size(capacity))
     c4, c5 = st.columns(2)
