@@ -142,5 +142,14 @@
     "details": "Document déplacé dans la corbeille.",
     "created_at": "2026-06-25 22:34:57",
     "id": 16
+  },
+  {
+    "user_id": 1,
+    "action": "Suppression",
+    "label": "Facture d'audit RA 2026",
+    "document_id": 2,
+    "details": "Document déplacé dans la corbeille.",
+    "created_at": "2026-06-25 22:35:10",
+    "id": 17
   }
 ]
